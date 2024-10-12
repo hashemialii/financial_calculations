@@ -27,7 +27,7 @@ To get started with this project, follow the steps below:
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/your-username/your-repo-name.git
+   git clone https://github.com/hashemialii/financial_calculations.git
    cd your-repo-name
    ```
 
