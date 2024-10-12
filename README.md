@@ -28,7 +28,7 @@ To get started with this project, follow the steps below:
 
    ```bash
    git clone https://github.com/hashemialii/financial_calculations.git
-   cd your-repo-name
+   cd financial_calculations
    ```
 
 2. **Create a virtual environment:**
