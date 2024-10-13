@@ -38,6 +38,7 @@
 
 from rest_framework import status, viewsets
 from rest_framework.response import Response
+from rest_framework.exceptions import NotFound
 from .models import ShahkarModelBasic, ShahkarModelIncome
 from .serializers import IncomeSerializer
 from .services import IncomeService
@@ -47,7 +48,34 @@ class IncomeCalculationsViewSet(viewsets.ModelViewSet):
     queryset = ShahkarModelIncome.objects.all()
     serializer_class = IncomeSerializer
 
+    def list(self, request, *args, **kwargs):
+        """
+        Override the list method to return a summary of all records.
+        """
+        queryset = self.get_queryset()
+        summary = [
+            {
+                'id': income.basic.id,
+                'year': income.basic.year,
+                'month': income.basic.month,
+                'amount': income.basic.amount
+            }
+            for income in queryset
+        ]
+        return Response(summary, status=status.HTTP_200_OK)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        Retrieve the detailed information for a specific record.
+        """
+        instance = self.get_object()
+        serializer = IncomeSerializer(instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def create(self, request, *args, **kwargs):
+        """
+        Create a new income calculation entry.
+        """
         year = request.data.get('year')
         month = request.data.get('month')
         amount = request.data.get('amount')
@@ -66,62 +94,48 @@ class IncomeCalculationsViewSet(viewsets.ModelViewSet):
         serializer = IncomeSerializer(income_instance)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def retrieve(self, request, *args, **kwargs):
-        year = request.data.get('year')
-        month = request.data.get('month')
-
-        if year is None or month is None:
-            return Response({'error': 'Please provide year and month.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            instance = ShahkarModelIncome.objects.get(basic__year=year, basic__month=month)
-            serializer = IncomeSerializer(instance)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except ShahkarModelIncome.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-    def delete(self, request, *args, **kwargs):
-        year = request.data.get('year')
-        month = request.data.get('month')
-
-        if year is None or month is None:
-            return Response({'error': 'Please provide year and month.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            # پیدا کردن رکورد پایه بر اساس سال و ماه
-            basic_instance = ShahkarModelBasic.objects.get(year=year, month=month)
-            id1 = basic_instance.id
-
-            # استفاده از basic_id برای حذف رکورد درآمد
-            income_instance = ShahkarModelIncome.objects.get(basic_id=id1)
-
-            # حذف رکورد درآمد
-            income_instance.delete()
-
-            # حذف رکورد پایه
-            basic_instance.delete()
-
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except ShahkarModelBasic.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        except ShahkarModelIncome.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
     def update(self, request, *args, **kwargs):
-        year = request.data.get('year')
-        month = request.data.get('month')
+        """
+        Update an existing income calculation entry.
+        """
+        instance = self.get_object()
         amount = request.data.get('amount')
 
-        if year is None or month is None or amount is None:
-            return Response({'error': 'Please provide year, month, and amount.'}, status=status.HTTP_400_BAD_REQUEST)
+        if amount is None:
+            return Response({'error': 'Please provide amount.'}, status=status.HTTP_400_BAD_REQUEST)
 
+        # به‌روزرسانی مقدار
+        instance.basic.amount = amount
+        instance.basic.save()
+
+        serializer = IncomeSerializer(instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, *args, **kwargs):
+        """
+        Delete an existing income calculation entry.
+        """
+        instance = self.get_object()
+        instance.basic.delete()  # حذف رکورد پایه
+        instance.delete()  # حذف رکورد درآمد
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def get_object(self):
+        """
+        Retrieve the object based on the URL parameter <id>.
+        """
         try:
-            instance = ShahkarModelIncome.objects.get(basic__year=year, basic__month=month)
-            data = {'year': year, 'month': month, 'amount': amount}
-            updated_instance = IncomeService.update_income(instance, data)
-            serializer = IncomeSerializer(updated_instance)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            # دریافت شناسه از URL
+            id = self.kwargs['pk']
+            # پیدا کردن ShahkarModelBasic بر اساس شناسه
+            basic_instance = ShahkarModelBasic.objects.get(id=id)
+            # پیدا کردن ShahkarModelIncome مربوط به این basic_instance
+            return ShahkarModelIncome.objects.get(basic=basic_instance)
+        except ShahkarModelBasic.DoesNotExist:
+            raise NotFound("ShahkarModelBasic not found.")
         except ShahkarModelIncome.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            raise NotFound("ShahkarModelIncome not found.")
+
+
+
