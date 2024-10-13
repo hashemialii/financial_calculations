@@ -55,7 +55,6 @@ class IncomeCalculationsViewSet(viewsets.ModelViewSet):
         if year is None or month is None or amount is None:
             return Response({'error': 'Please provide year, month, and amount.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # ایجاد ورودی جدید
         basic_data = {
             'year': year,
             'month': month,
@@ -89,11 +88,26 @@ class IncomeCalculationsViewSet(viewsets.ModelViewSet):
             return Response({'error': 'Please provide year and month.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            instance = ShahkarModelIncome.objects.get(basic__year=year, basic__month=month)
-            instance.delete()
+            # پیدا کردن رکورد پایه بر اساس سال و ماه
+            basic_instance = ShahkarModelBasic.objects.get(year=year, month=month)
+            id1 = basic_instance.id
+
+            # استفاده از basic_id برای حذف رکورد درآمد
+            income_instance = ShahkarModelIncome.objects.get(basic_id=id1)
+
+            # حذف رکورد درآمد
+            income_instance.delete()
+
+            # حذف رکورد پایه
+            basic_instance.delete()
+
             return Response(status=status.HTTP_204_NO_CONTENT)
+        except ShahkarModelBasic.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         except ShahkarModelIncome.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def update(self, request, *args, **kwargs):
         year = request.data.get('year')
