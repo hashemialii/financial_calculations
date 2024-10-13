@@ -1,12 +1,10 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import IncomeViewSet
-
+from .views import IncomeCalculationsViewSet
 
 router = DefaultRouter()
-router.register(r'income', IncomeViewSet, basename='income')
+router.register(r'income-calculations', IncomeCalculationsViewSet, basename='income-calculations')
 
-# استفاده از router در urlpatterns
 urlpatterns = [
     path('', include(router.urls)),
 ]
