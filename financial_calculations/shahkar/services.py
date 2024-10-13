@@ -9,18 +9,18 @@ class IncomeCalculator:
     """
 
     multipliers = {
-        1400: 100000,
-        1401: 200000,
-        1402: 300000,
-        1403: 400000
+        1400: 10,
+        1401: 100,
+        1402: 1000,
+        1403: 10000,
     }
 
     @classmethod
-    def calculate(cls, year, amount):
+    def calculate(cls, year_2, amount):
         """
         Calculate income using the multiplier for the given year.
         """
-        return amount * cls.multipliers.get(year, 0)
+        return amount * cls.multipliers.get(year_2, 0)
 
 
 class IncomeService:
