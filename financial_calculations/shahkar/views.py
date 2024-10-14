@@ -13,8 +13,15 @@ class IncomeCalculationsViewSet(viewsets.ModelViewSet):
         required_fields = ['year', 'month', 'amount']
 
         if not all(field in request.data for field in required_fields):
+            print(request.data)
             return Response(
                 {'error': 'Please provide year, month, and amount.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if len(request.data) != len(required_fields):
+            return Response(
+                {'error': 'Only year, month, and amount fields are allowed.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
         basic_instance = IncomeService.create_basic_entry(request.data)
