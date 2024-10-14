@@ -10,18 +10,18 @@ class IncomeCalculationsViewSet(viewsets.ModelViewSet):
     serializer_class = IncomeSerializer
 
     def create(self, request, *args, **kwargs):
-        year = request.data.get('year')
-        month = request.data.get('month')
-        amount = request.data.get('amount')
+        required_fields = ['year', 'month', 'amount']
 
-        if year is None or month is None or amount is None:
-            return Response({'error': 'Please provide year, month, and amount.'}, status=status.HTTP_400_BAD_REQUEST)
+        if not all(field in request.data for field in required_fields):
+            return Response(
+                {'error': 'Please provide year, month, and amount.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        basic_data = {'year': year, 'month': month, 'amount': amount}
-        basic_instance = IncomeService.create_basic_entry(basic_data)
+        basic_instance = IncomeService.create_basic_entry(request.data)
         income_instance = IncomeService.create_income_entry(basic_instance)
 
-        serializer = IncomeSerializer(income_instance)
+        serializer = self.get_serializer(income_instance)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def update(self, request, *args, **kwargs):
