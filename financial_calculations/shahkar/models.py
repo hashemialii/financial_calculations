@@ -17,7 +17,7 @@ class ShahkarModelBasic(models.Model):
 
 class ShahkarModelIncome(models.Model):
     basic = models.OneToOneField(
-        ShahkarModelBasic, on_delete=models.CASCADE, related_name='shahkar_income_details'
+        ShahkarModelBasic, on_delete=models.CASCADE, related_name='shahkar_income_details', primary_key=True
     )
     income = models.DecimalField(max_digits=50, decimal_places=2)
     year_2 = models.IntegerField(null=True, blank=True)
