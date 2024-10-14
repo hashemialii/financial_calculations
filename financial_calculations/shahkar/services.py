@@ -4,9 +4,6 @@ from core.utils import FiscalYearCalculator
 
 # IncomeCalculatorService
 class IncomeCalculator:
-    """
-    A class to calculate income based on the fiscal year multiplier.
-    """
 
     multipliers = {
         1400: 10,
@@ -53,19 +50,13 @@ class IncomeService:
         return income_instance
 
     @staticmethod
-    def update_income(instance, data):
+    def update_amount(income_instance, new_amount):
+        income_instance.basic.amount = new_amount
+        income_instance.basic.save()
         fiscal_year, fiscal_month = FiscalYearCalculator.calculate_fiscal_year(
-            data.get('year'), data.get('month')
+            income_instance.basic.year, income_instance.basic.month
         )
-        new_income = IncomeCalculator.calculate(fiscal_year, data.get('amount'))
-
-        instance.basic.year = data.get('year')
-        instance.basic.month = data.get('month')
-        instance.basic.amount = data.get('amount')
-        instance.basic.save()
-
-        instance.income = new_income
-        instance.year_2 = fiscal_year
-        instance.month_2 = fiscal_month
-        instance.save()
-        return instance
+        new_income = IncomeCalculator.calculate(fiscal_year, new_amount)
+        income_instance.income = new_income
+        income_instance.save()
+        return income_instance
