@@ -19,7 +19,6 @@ class IncomeCalculationsViewSet(viewsets.ModelViewSet):
             )
         basic_instance = IncomeService.create_basic_entry(request.data)
         income_instance = IncomeService.create_income_entry(basic_instance)
-
         serializer = self.get_serializer(income_instance)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -30,10 +29,10 @@ class IncomeCalculationsViewSet(viewsets.ModelViewSet):
             return Response({'error': 'Amount is required.'}, status=status.HTTP_400_BAD_REQUEST)
         updated_instance = IncomeService.update_amount(income_instance, amount)
         serializer = self.get_serializer(updated_instance)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
         income_instance = self.get_object()
         basic_instance = income_instance.basic
         basic_instance.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({f'{income_instance.basic} was deleted'})
