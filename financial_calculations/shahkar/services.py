@@ -47,15 +47,16 @@ class IncomeService:
             year_2=fiscal_year,
             month_2=fiscal_month
         )
+        print(income_instance)
+        print("=" * 40)
         return income_instance
 
     @staticmethod
     def update_amount(income_instance, new_amount):
         income_instance.basic.amount = new_amount
         income_instance.basic.save()
-        fiscal_year, fiscal_month = FiscalYearCalculator.calculate_fiscal_year(
-            income_instance.basic.year, income_instance.basic.month
-        )
+        fiscal_year, fiscal_month = income_instance.year_2, income_instance.month_2
+
         new_income = IncomeCalculator.calculate(fiscal_year, new_amount)
         income_instance.income = new_income
         income_instance.save()
