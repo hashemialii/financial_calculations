@@ -16,7 +16,10 @@ class IncomeCalculationsViewSet(viewsets.ModelViewSet):
 
         basic_instance = IncomeService.create_basic_entry(request.data)
 
-        IncomeService.create_income_entry(basic_instance)
+        income_instance = IncomeService.create_income_entry(basic_instance)
+
+        basic_instance.basic = income_instance
+        basic_instance.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 

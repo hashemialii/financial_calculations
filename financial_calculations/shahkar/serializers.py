@@ -9,7 +9,8 @@ class IncomeSerializer(serializers.ModelSerializer):
 
 
 class BasicSerializer(serializers.ModelSerializer):
-    # Remove `basic` from being a required input, it will be created programmatically
+    basic = IncomeSerializer(read_only=True)
+    
     class Meta:
         model = ShahkarBasicModel
-        fields = ['year', 'month', 'amount']  # Only keep necessary fields from user input
+        fields = ['year', 'month', 'amount', 'basic']
