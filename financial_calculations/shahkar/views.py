@@ -14,6 +14,7 @@ class IncomeCalculationsViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        # basic_instance = IncomeService.create_basic_entry(request.data)
         basic_instance = IncomeService.create_basic_entry(serializer.validated_data)
 
         income_instance = IncomeService.create_income_entry(basic_instance)

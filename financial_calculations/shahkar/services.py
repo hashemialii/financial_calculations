@@ -3,16 +3,19 @@ from core.utils import FiscalYearCalculator
 
 
 class IncomeCalculator:
-    multipliers = {
-        1400: 10,
-        1401: 100,
-        1402: 1000,
-        1403: 10000,
-    }
+    @classmethod
+    def get_multipliers(cls):
+        return {
+            1400: 10,
+            1401: 100,
+            1402: 1000,
+            1403: 10000,
+        }
 
     @classmethod
     def calculate(cls, year, amount):
-        return amount * cls.multipliers.get(year, 0)
+        multipliers = cls.get_multipliers()
+        return amount * multipliers.get(year, 0)
 
 
 class IncomeService:
@@ -38,15 +41,3 @@ class IncomeService:
             month=fiscal_month
         )
         return income_instance
-
-
-    # @staticmethod
-    # def update_amount(income_instance, new_amount):
-    #     income_instance.basic.amount = new_amount
-    #     income_instance.basic.save()
-    #     fiscal_year, fiscal_month = income_instance.year, income_instance.month
-    #
-    #     new_income = IncomeCalculator.calculate(fiscal_year, new_amount)
-    #     income_instance.income = new_income
-    #     income_instance.save()
-    #     return income_instance
