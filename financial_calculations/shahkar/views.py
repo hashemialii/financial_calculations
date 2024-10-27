@@ -1,35 +1,23 @@
-from rest_framework import status, viewsets
+from rest_framework import viewsets
 from rest_framework.response import Response
-from .models import ShahkarModelIncome
-from .serializers import IncomeSerializer
+from rest_framework import status
+from .models import ShahkarBasicModel
+from .serializers import BasicSerializer
 from .services import IncomeService
 
 
 class IncomeCalculationsViewSet(viewsets.ModelViewSet):
-    queryset = ShahkarModelIncome.objects.all()
-    serializer_class = IncomeSerializer
+    queryset = ShahkarBasicModel.objects.all()
+    serializer_class = BasicSerializer
 
     def create(self, request, *args, **kwargs):
-        required_fields = ['year', 'month', 'amount']
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-        if not all(field in request.data for field in required_fields):
-            return Response(
-                {'error': 'Please provide year, month, and amount.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        if len(request.data) != len(required_fields):
-            return Response(
-                {'error': 'Only year, month, and amount fields are allowed.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        print(request.data)
         basic_instance = IncomeService.create_basic_entry(request.data)
-        print(basic_instance)
-        income_instance = IncomeService.create_income_entry(basic_instance)
-        print(income_instance)
-        serializer = self.get_serializer(income_instance)
-        print(serializer.data)
+
+        IncomeService.create_income_entry(basic_instance)
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def update(self, request, *args, **kwargs):
@@ -37,6 +25,8 @@ class IncomeCalculationsViewSet(viewsets.ModelViewSet):
         income_instance = self.get_object()
         print(income_instance)
         amount = request.data.get('amount')
+        # partial update
+        # upddate amoynt only
         if amount is None:
             return Response({'error': 'Amount is required.'}, status=status.HTTP_400_BAD_REQUEST)
         updated_instance = IncomeService.update_amount(income_instance, amount)

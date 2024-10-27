@@ -1,8 +1,4 @@
 class FiscalYearCalculator:
-    """
-    A class to handle fiscal year calculations.
-    """
-
     @staticmethod
     def calculate_fiscal_year(year, month):
         if month < 10:

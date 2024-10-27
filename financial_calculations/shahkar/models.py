@@ -1,9 +1,19 @@
 from django.db import models
 
 
-# shahkar base model
-class ShahkarModelBasic(models.Model):
-    id = models.AutoField(primary_key=True)
+class ShahkarIncomeModel(models.Model):
+    income = models.DecimalField(max_digits=50, decimal_places=2)
+    year = models.IntegerField()
+    month = models.IntegerField()
+
+    def __str__(self):
+        return f"Income: {self.income} | {self.year}-{self.month}"
+
+
+class ShahkarBasicModel(models.Model):
+    basic = models.OneToOneField(
+        ShahkarIncomeModel, on_delete=models.CASCADE, related_name='shahkar_basic_model', null=True
+    )
     year = models.IntegerField()
     month = models.IntegerField()
     amount = models.DecimalField(max_digits=50, decimal_places=2)
@@ -12,16 +22,4 @@ class ShahkarModelBasic(models.Model):
         unique_together = ('year', 'month')
 
     def __str__(self):
-        return f"{self.year}-{self.month} | Amount: {self.amount}"
-
-
-class ShahkarModelIncome(models.Model):
-    basic = models.OneToOneField(
-        ShahkarModelBasic, on_delete=models.CASCADE, related_name='shahkar_income_details', primary_key=True
-    )
-    income = models.DecimalField(max_digits=50, decimal_places=2)
-    year_2 = models.IntegerField(null=True, blank=True)
-    month_2 = models.IntegerField(null=True, blank=True)
-
-    def __str__(self):
-        return f"Income: {self.income} | {self.year_2}-{self.month_2}"
+        return f"{self.year}-{self.month} | Amount: {self.amount} | Income: {self.basic}"

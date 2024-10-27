@@ -5,6 +5,4 @@ from .views import IncomeCalculationsViewSet
 router = DefaultRouter()
 router.register(r'income-calculations', IncomeCalculationsViewSet, basename='income-calculations')
 
-urlpatterns = [
-    path('', include(router.urls)),
-]
+urlpatterns = router.urls
