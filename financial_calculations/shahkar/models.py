@@ -22,4 +22,4 @@ class ShahkarBasicModel(models.Model):
         unique_together = ('year', 'month')
 
     def __str__(self):
-        return f"year and month: {self.year}-{self.month} | amount: {self.amount} | calculations: {self.basic}"
+        return f"year and month: {self.year}-{self.month} | amount: {self.amount} | {self.basic}"
