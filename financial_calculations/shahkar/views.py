@@ -38,3 +38,9 @@ class IncomeCalculationsViewSet(viewsets.ModelViewSet):
         basic_instance.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        income_instance = self.get_object()
+        basic_instance = income_instance.basic
+        basic_instance.delete()
+        return Response({f'{income_instance} was deleted'})

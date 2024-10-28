@@ -44,8 +44,6 @@ class IncomeService:
 
     @staticmethod
     def update_basic_entry(basic_instance, data):
-        basic_instance.year = data.get('year', basic_instance.year)
-        basic_instance.month = data.get('month', basic_instance.month)
         basic_instance.amount = data.get('amount', basic_instance.amount)
         basic_instance.save()
         return basic_instance
