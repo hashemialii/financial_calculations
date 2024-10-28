@@ -7,7 +7,7 @@ class ShahkarIncomeModel(models.Model):
     month = models.IntegerField()
 
     def __str__(self):
-        return f"Income: {self.income} | {self.year}-{self.month}"
+        return f"Income: {self.income} | financial year and month: {self.year}-{self.month}"
 
 
 class ShahkarBasicModel(models.Model):
@@ -22,4 +22,4 @@ class ShahkarBasicModel(models.Model):
         unique_together = ('year', 'month')
 
     def __str__(self):
-        return f"{self.year}-{self.month} | Amount: {self.amount} | Income: {self.basic}"
+        return f"year and month: {self.year}-{self.month} | amount: {self.amount} | calculations: {self.basic}"
