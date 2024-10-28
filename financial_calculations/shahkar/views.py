@@ -7,6 +7,7 @@ from .services import IncomeService
 
 
 class IncomeCalculationsViewSet(viewsets.ModelViewSet):
+    # queryset = ShahkarBasicModel.objects.all().order_by('year', 'month')
     queryset = ShahkarBasicModel.objects.all()
     serializer_class = BasicSerializer
 

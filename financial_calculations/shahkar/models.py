@@ -20,6 +20,7 @@ class ShahkarBasicModel(models.Model):
 
     class Meta:
         unique_together = ('year', 'month')
+        ordering = ['year', 'month']
 
     def __str__(self):
         return f"year and month: {self.year}-{self.month} | amount: {self.amount} | {self.basic}"

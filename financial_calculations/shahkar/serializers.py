@@ -5,7 +5,7 @@ from .models import ShahkarBasicModel, ShahkarIncomeModel
 class IncomeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShahkarIncomeModel
-        fields = '__all__'
+        fields = ['year', 'month', 'income']
 
 
 class BasicSerializer(serializers.ModelSerializer):
@@ -13,4 +13,4 @@ class BasicSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = ShahkarBasicModel
-        fields = ['year', 'month', 'amount', 'basic']
+        fields = '__all__'
